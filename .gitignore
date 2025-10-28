@@ -1,8 +1,12 @@
-# macOS artifacts
+# macOS
 .DS_Store
 .AppleDouble
 .LSOverride
+
+# Thumbnails
 ._*
+
+# Files that might appear in the root of a volume
 .DocumentRevisions-V100
 .fseventsd
 .Spotlight-V100
@@ -10,23 +14,26 @@
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
 .AppleDB
 .AppleDesktop
 Network Trash Folder
 Temporary Items
 .apdisk
 
-# Python build / cache artifacts
+# Python cache / build artifacts
 __pycache__/
 *.py[cod]
 *$py.class
 build/
 dist/
+.eggs/
 *.egg-info/
 
 # Virtual environments & tooling
-.env
 .venv/
+.env
 .envrc
 .mypy_cache/
 .pytest_cache/
@@ -39,3 +46,13 @@ htmlcov/
 # Editor metadata
 .idea/
 .vscode/
+
+# Local data & secrets
+*.sqlite3
+*.db
+.env.*
+
+# Node / frontend builds (if dashboard lives here later)
+node_modules/
+.svelte-kit/
+
