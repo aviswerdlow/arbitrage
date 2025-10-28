@@ -52,7 +52,7 @@ class Event(Base, TimestampMixin):
     start_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     end_time: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    markets: Mapped[list["Market"]] = relationship(back_populates="event")
+    markets: Mapped[list["Market"]] = relationship(back_populates="event", lazy="selectin")
 
     __table_args__ = (
         UniqueConstraint("venue", "slug_or_ticker", name="uq_events_venue_slug"),
@@ -76,12 +76,12 @@ class Market(Base, TimestampMixin):
         String(64), ForeignKey("events.id", ondelete="SET NULL"), nullable=True
     )
 
-    event: Mapped[Event | None] = relationship(back_populates="markets")
+    event: Mapped[Event | None] = relationship(back_populates="markets", lazy="selectin")
     market_a_pairs: Mapped[list["MarketPair"]] = relationship(
-        back_populates="market_a", foreign_keys="MarketPair.market_a_id"
+        back_populates="market_a", foreign_keys="MarketPair.market_a_id", lazy="selectin"
     )
     market_b_pairs: Mapped[list["MarketPair"]] = relationship(
-        back_populates="market_b", foreign_keys="MarketPair.market_b_id"
+        back_populates="market_b", foreign_keys="MarketPair.market_b_id", lazy="selectin"
     )
 
     __table_args__ = (
@@ -107,12 +107,12 @@ class MarketPair(Base, TimestampMixin):
     active_flag: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     market_a: Mapped[Market] = relationship(
-        back_populates="market_a_pairs", foreign_keys=[market_a_id]
+        back_populates="market_a_pairs", foreign_keys=[market_a_id], lazy="selectin"
     )
     market_b: Mapped[Market] = relationship(
-        back_populates="market_b_pairs", foreign_keys=[market_b_id]
+        back_populates="market_b_pairs", foreign_keys=[market_b_id], lazy="selectin"
     )
-    edges: Mapped[list["Edge"]] = relationship(back_populates="pair")
+    edges: Mapped[list["Edge"]] = relationship(back_populates="pair", lazy="selectin")
 
     __table_args__ = (
         UniqueConstraint("market_a_id", "market_b_id", name="uq_market_pairs_unique_pair"),
@@ -135,7 +135,7 @@ class OrderbookSnapshot(Base):
     ask_sz: Mapped[float] = mapped_column(Numeric(10, 4), nullable=False)
     lvl2_json: Mapped[dict] = mapped_column(JSON, nullable=False)
 
-    market: Mapped[Market] = relationship()
+    market: Mapped[Market] = relationship(lazy="selectin")
 
     __table_args__ = (
         Index("ix_orderbooks_market_ts", "market_id", "ts"),
@@ -157,7 +157,7 @@ class Edge(Base):
     signal_conf: Mapped[float | None] = mapped_column(Numeric(5, 4), nullable=True)
     fee_rev_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
-    pair: Mapped[MarketPair] = relationship(back_populates="edges")
+    pair: Mapped[MarketPair] = relationship(back_populates="edges", lazy="selectin")
 
     __table_args__ = (Index("ix_edges_pair_ts", "pair_id", "ts"),)
 
@@ -179,7 +179,7 @@ class Order(Base):
     ts_ack: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     status: Mapped[str] = mapped_column(String(32), nullable=False)
 
-    fills: Mapped[list["Fill"]] = relationship(back_populates="order")
+    fills: Mapped[list["Fill"]] = relationship(back_populates="order", lazy="selectin", cascade="all, delete-orphan")
 
     __table_args__ = (
         Index("ix_orders_market", "market_id"),
@@ -201,7 +201,7 @@ class Position(Base, TimestampMixin):
     avg_px_yes: Mapped[float | None] = mapped_column(Numeric(10, 4), nullable=True)
     avg_px_no: Mapped[float | None] = mapped_column(Numeric(10, 4), nullable=True)
 
-    market: Mapped[Market] = relationship()
+    market: Mapped[Market] = relationship(lazy="selectin")
 
     __table_args__ = (
         UniqueConstraint("venue", "market_id", name="uq_positions_venue_market"),
@@ -223,7 +223,7 @@ class Fill(Base):
     fee: Mapped[float | None] = mapped_column(Numeric(10, 4), nullable=True)
     slippage_cents: Mapped[float | None] = mapped_column(Numeric(10, 4), nullable=True)
 
-    order: Mapped[Order] = relationship(back_populates="fills")
+    order: Mapped[Order] = relationship(back_populates="fills", lazy="selectin")
 
 
 class ConfigEntry(Base):

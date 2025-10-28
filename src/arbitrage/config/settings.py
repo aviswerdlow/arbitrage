@@ -3,7 +3,8 @@
 from functools import lru_cache
 from typing import List
 
-from pydantic import BaseSettings, Field
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -18,10 +19,7 @@ class Settings(BaseSettings):
     log_level: str = Field(default="INFO", description="Logging level for all services")
     allowed_origins: List[str] = Field(default_factory=lambda: ["*"], description="CORS origins")
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = False
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False)
 
 
 @lru_cache(maxsize=1)

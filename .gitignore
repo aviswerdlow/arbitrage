@@ -1,7 +1,30 @@
+# macOS artifacts
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Python build / cache artifacts
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+build/
+dist/
+*.egg-info/
+
+# Virtual environments & tooling
 .env
 .venv/
 .envrc
@@ -9,5 +32,10 @@ __pycache__/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Logs
 *.log
-.DS_Store
+
+# Editor metadata
+.idea/
+.vscode/
