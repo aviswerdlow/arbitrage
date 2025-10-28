@@ -21,3 +21,28 @@
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+
+# Environments
+.env
+.venv/
+
+# Build artifacts
+build/
+dist/
+.eggs/
+*.egg-info/
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+
+# IDE
+.idea/
+.vscode/
