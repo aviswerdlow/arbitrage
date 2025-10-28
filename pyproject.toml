@@ -47,6 +47,9 @@ dev = [
     "mypy>=1.8",
     "aiosqlite>=0.19"
 ]
+bot = [
+    "discord.py>=2.3"
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
