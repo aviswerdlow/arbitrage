@@ -100,6 +100,17 @@ class Settings:
         )
 
 
+_settings: Settings | None = None
+
+
+def get_settings() -> Settings:
+    """Get or create singleton settings instance."""
+    global _settings
+    if _settings is None:
+        _settings = Settings.from_env()
+    return _settings
+
+
 __all__ = [
     "ApiKeysSettings",
     "AwsSettings",
@@ -107,4 +118,5 @@ __all__ = [
     "RedisSettings",
     "ServiceBudget",
     "Settings",
+    "get_settings",
 ]
