@@ -22,19 +22,28 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-# Python cache / build artifacts
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+
+# Environments
+.env
+.venv/
+.envrc
+.env.*
+
+# Build artifacts
 build/
 dist/
 .eggs/
 *.egg-info/
 
-# Virtual environments & tooling
-.venv/
-.env
-.envrc
+# Tooling caches
 .mypy_cache/
 .pytest_cache/
 .coverage
@@ -43,16 +52,13 @@ htmlcov/
 # Logs
 *.log
 
-# Editor metadata
+# Editor / IDE
 .idea/
 .vscode/
 
 # Local data & secrets
-*.sqlite3
 *.db
-.env.*
 
 # Node / frontend builds (if dashboard lives here later)
 node_modules/
 .svelte-kit/
-
