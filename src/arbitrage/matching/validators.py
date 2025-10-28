@@ -201,21 +201,30 @@ class LLMValidator:
 
     def __init__(
         self,
-        api_key: str,
+        deepseek_api_key: str | None = None,
+        openai_api_key: str | None = None,
         min_score: float = 0.92,
-        provider: str = "deepseek",
+        primary_provider: str = "deepseek",
+        enable_fallback: bool = True,
     ) -> None:
         """Initialize LLM validator.
 
         Args:
-            api_key: API key for LLM provider
+            deepseek_api_key: DeepSeek API key
+            openai_api_key: OpenAI API key (for fallback)
             min_score: Minimum similarity score to accept (default 0.92 per TDD)
-            provider: LLM provider to use ("deepseek" or "openai")
+            primary_provider: Primary LLM provider ("deepseek" or "openai")
+            enable_fallback: Enable fallback to secondary provider
         """
-        self.api_key = api_key
+        from arbitrage.matching.llm_client import LLMClient
+
         self.min_score = min_score
-        self.provider = provider
-        self._client = None
+        self._client = LLMClient(
+            deepseek_api_key=deepseek_api_key,
+            openai_api_key=openai_api_key,
+            primary_provider=primary_provider,
+            enable_fallback=enable_fallback,
+        )
 
     async def _call_llm(self, prompt: str) -> dict:
         """Call LLM API with structured prompt.
@@ -226,20 +235,31 @@ class LLMValidator:
         Returns:
             Structured response with similarity score and explanation
         """
-        # TODO: Implement actual LLM API calls using httpx
-        # For now, return a mock response
-        logger.info("llm_call", provider=self.provider)
-
-        # Mock response structure
-        return {
-            "similarity": 0.95,
-            "explanation": "Markets describe the same event with equivalent outcomes",
-            "field_matches": {
-                "time_window": True,
-                "outcome_definition": True,
-                "resolution_source": True,
+        messages = [
+            {
+                "role": "system",
+                "content": "You are an expert at analyzing prediction market contracts for equivalence. Return valid JSON only.",
             },
-        }
+            {"role": "user", "content": prompt},
+        ]
+
+        try:
+            result = await self._client.complete(
+                messages=messages, temperature=0.0, max_tokens=500
+            )
+            return result
+        except Exception as exc:
+            logger.error("llm_call_failed", error=str(exc))
+            # Return conservative low score on failure
+            return {
+                "similarity": 0.0,
+                "explanation": f"LLM call failed: {str(exc)}",
+                "field_matches": {
+                    "time_window": False,
+                    "outcome_definition": False,
+                    "resolution_source": False,
+                },
+            }
 
     def _build_prompt(self, pair: MarketPair) -> str:
         """Build structured prompt for LLM comparison.
