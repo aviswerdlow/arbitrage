@@ -24,6 +24,8 @@ Temporary Items
 
 # Python
 __pycache__/
+*.py[cod]
+*$py.class
 *.pyc
 *.pyo
 *.pyd
@@ -32,6 +34,8 @@ __pycache__/
 # Environments
 .env
 .venv/
+.envrc
+.env.*
 
 # Build artifacts
 build/
@@ -40,9 +44,21 @@ dist/
 *.egg-info/
 
 # Tooling caches
-.pytest_cache/
 .mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
 
-# IDE
+# Logs
+*.log
+
+# Editor / IDE
 .idea/
 .vscode/
+
+# Local data & secrets
+*.db
+
+# Node / frontend builds (if dashboard lives here later)
+node_modules/
+.svelte-kit/

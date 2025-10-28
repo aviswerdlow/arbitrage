@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseSettings, Field
 
@@ -43,6 +43,15 @@ class AwsSettings(BaseSettings):
     )
 
 
+class ApiKeysSettings(BaseSettings):
+    """API keys for external trading platforms and AI services."""
+
+    polymarket_api_key: Optional[str] = Field(default=None, description="Polymarket API key")
+    kalshi_api_key: Optional[str] = Field(default=None, description="Kalshi API key")
+    deepseek_api_key: Optional[str] = Field(default=None, description="DeepSeek API key")
+    gpt4o_api_key: Optional[str] = Field(default=None, description="GPT-4o API key")
+
+
 class ServiceBudget(BaseSettings):
     """Latency budgets and retry policies enforced across services."""
 
@@ -58,6 +67,7 @@ class Settings:
     database: DatabaseSettings
     redis: RedisSettings
     aws: AwsSettings
+    api_keys: ApiKeysSettings
     budgets: ServiceBudget
     friction_pack_paths: List[Path] = field(default_factory=list)
     enabled_services: List[str] = field(default_factory=list)
@@ -69,6 +79,7 @@ class Settings:
         database = DatabaseSettings()
         redis = RedisSettings()
         aws = AwsSettings()
+        api_keys = ApiKeysSettings()
         budgets = ServiceBudget()
 
         enabled_services_raw = os.getenv("ENABLED_SERVICES", "")
@@ -81,6 +92,7 @@ class Settings:
             database=database,
             redis=redis,
             aws=aws,
+            api_keys=api_keys,
             budgets=budgets,
             friction_pack_paths=friction_pack_paths,
             enabled_services=enabled_services,
@@ -88,6 +100,7 @@ class Settings:
 
 
 __all__ = [
+    "ApiKeysSettings",
     "AwsSettings",
     "DatabaseSettings",
     "RedisSettings",
