@@ -48,21 +48,25 @@ class RateLimiter:
 
     async def acquire(self) -> None:
         """Wait until a request can be made within rate limits."""
-        now = datetime.now()
-        cutoff = now - timedelta(seconds=self.window_seconds)
+        while True:
+            now = datetime.now()
+            cutoff = now - timedelta(seconds=self.window_seconds)
 
-        # Remove old requests
-        self._requests = [req for req in self._requests if req > cutoff]
+            # Remove requests outside the window
+            self._requests = [req for req in self._requests if req > cutoff]
 
-        # Check if at limit
-        if len(self._requests) >= self.max_requests:
+            if len(self._requests) < self.max_requests:
+                self._requests.append(now)
+                return
+
             oldest = self._requests[0]
             wait_time = (oldest - cutoff).total_seconds()
             if wait_time > 0:
                 logger.debug("rate_limit_waiting", wait_seconds=wait_time)
                 await asyncio.sleep(wait_time)
-
-        self._requests.append(now)
+            else:
+                # Window advanced enough; retry with fresh timestamp.
+                await asyncio.sleep(0)
 
 
 class LLMClient:

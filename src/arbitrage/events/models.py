@@ -4,9 +4,11 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import BaseModel, Field
+
+from arbitrage.domain.orders import OrderIntent
 
 
 class EventType(str, Enum):
@@ -81,6 +83,14 @@ class ExecutionIntent(BaseModel):
     hedge_probability: float = Field(
         ..., ge=0.0, le=1.0, description="Probability that hedge will fill within SLA."
     )
+    primary_order: OrderIntent | None = Field(
+        default=None,
+        description="Concrete order parameters for the primary leg when available.",
+    )
+    hedge_order: OrderIntent | None = Field(
+        default=None,
+        description="Concrete order parameters for the hedge leg when available.",
+    )
 
 
 class ExecutionResult(BaseModel):
@@ -88,8 +98,8 @@ class ExecutionResult(BaseModel):
 
     intent_id: str
     success: bool
-    hedge_completed_ms: Optional[int] = None
-    message: Optional[str] = None
+    hedge_completed_ms: int | None = None
+    message: str | None = None
 
 
 __all__ = [
